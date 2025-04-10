@@ -1,0 +1,54 @@
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+
+entity ALU_TB is
+end ALU_TB;
+
+architecture Behavioral of ALU_TB is
+
+    component ALU_UNIT is
+        Port (
+            A : in STD_LOGIC_VECTOR(63 downto 0);
+            B : in STD_LOGIC_VECTOR(63 downto 0);
+            Carry_In : in STD_LOGIC;
+            Carry_Out : out STD_LOGIC;
+            Op_Sel : in STD_LOGIC_VECTOR(3 downto 0);
+            ALUOut : out STD_LOGIC_VECTOR(63 downto 0)
+        );
+    end component;
+
+    signal A, B : STD_LOGIC_VECTOR(63 downto 0);
+    signal Carry_In, Carry_Out : STD_LOGIC;
+    signal Op_Sel : STD_LOGIC_VECTOR(3 downto 0);
+    signal ALUOut : STD_LOGIC_VECTOR(63 downto 0);
+
+begin
+    UUT: ALU_UNIT port map(
+        A => A,
+        B => B,
+        Carry_In => Carry_In,
+        Carry_Out => Carry_Out,
+        Op_Sel => Op_Sel,
+        ALUOut => ALUOut
+    );
+
+    process
+    begin
+        -- Sample test cases
+        A <= x"0000000000000000";
+        B <= x"0000000000000000";
+        Carry_In <= '0';
+        Op_Sel <= x"0";
+        wait for 10 ns;
+
+        A <= x"FFFFFFFFFFFFFFFF";
+        B <= x"0010110000000001";
+        Op_Sel <= x"1";
+        wait for 10 ns;
+
+        -- Add other test cases here (as shown in the PDF)...
+
+        wait;
+    end process;
+
+end Behavioral;
