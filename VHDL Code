@@ -1,0 +1,69 @@
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+use IEEE.NUMERIC_STD.ALL;
+
+entity ALU_UNIT is
+    Port (
+        A : in STD_LOGIC_VECTOR(63 downto 0);
+        B : in STD_LOGIC_VECTOR(63 downto 0);
+        Carry_In : in STD_LOGIC;
+        Carry_Out : out STD_LOGIC;
+        Op_Sel : in STD_LOGIC_VECTOR(3 downto 0);
+        ALUOut : out STD_LOGIC_VECTOR(63 downto 0)
+    );
+end ALU_UNIT;
+
+architecture Behavioral of ALU_UNIT is
+begin
+    process(A, B, Carry_In, Op_Sel)
+        variable temp : std_logic_vector(64 downto 0);
+        variable tempincr : std_logic_vector(64 downto 0);
+    begin
+        Carry_Out <= '0';
+
+        case Op_Sel is
+            when "0000" =>
+                ALUOut <= A;
+                Carry_Out <= '0';
+
+            when "0001" =>
+                temp := std_logic_vector(('0' & unsigned(A)) + 1);
+                ALUOut <= temp(63 downto 0);
+                if temp(64) = '1' then
+                    Carry_Out <= '1';
+                end if;
+
+            when "0010" =>
+                ALUOut <= std_logic_vector(unsigned(A) - 1);
+
+            when "0011" =>
+                tempincr := std_logic_vector(('0' & unsigned(A) + unsigned(B)) + 1);
+                ALUOut <= tempincr(63 downto 0);
+                if tempincr(64) = '1' then
+                    Carry_Out <= '1';
+                end if;
+
+            when "0100" =>
+                ALUOut <= NOT A;
+
+            when "0101" =>
+                ALUOut <= A AND B;
+
+            when "0110" =>
+                ALUOut <= A OR B;
+
+            when "0111" =>
+                ALUOut <= A XOR B;
+
+            when "1000" | "1001" | "1010" | "1011" =>
+                ALUOut <= std_logic_vector(shift_right(unsigned(A), TO_INTEGER(unsigned(B))));
+
+            when "1100" | "1101" | "1110" | "1111" =>
+                ALUOut <= std_logic_vector(shift_left(unsigned(A), TO_INTEGER(unsigned(B))));
+
+            when others =>
+                ALUOut <= (others => '0');
+                Carry_Out <= '0';
+        end case;
+    end process;
+end Behavioral;
